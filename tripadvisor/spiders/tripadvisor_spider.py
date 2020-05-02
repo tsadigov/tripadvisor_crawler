@@ -44,7 +44,7 @@ class TripadvisorSpider(scrapy.Spider):
 
         self.page_offset+=30
         self.count += 1
-        # if self.list_prev_len != self.list_cur_len:
+
         if self.page_offset < 61:
             next_page = "https://www.tripadvisor.com/Restaurants-g293933-oa"+str(self.page_offset)+"-Azerbaijan.html#EATERY_LIST_CONTENTS"
             yield scrapy.Request(next_page, self.parse)
