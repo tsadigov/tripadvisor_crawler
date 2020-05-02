@@ -3,29 +3,21 @@ import re, math
 from scrapy.loader import ItemLoader
 from tripadvisor.items import RestaurantItem, RestaurantInfoItem, RestaurantReviewItem
 import sys, os
-# from selenium import webdriver
-# from selenium.common.exceptions import TimeoutException
-# from selenium.webdriver.support.ui import WebDriverWait
-# from selenium.webdriver.support import expected_conditions as EC
-# from selenium.webdriver.common.by import By
 
-# chromeDriverPath = "D:\Webdriver\chromedriver.exe"
 class TripadvisorSpider(scrapy.Spider):
     name = "tripadvisor"
 
     restaurant_id_list = []
     page_offset = 0
-    # list_prev_len = 0
+    list_prev_len = 0
     list_cur_len = 0
     count = 0
 
     url = "https://www.tripadvisor.com/Restaurants-g293933-oa"+str(page_offset)+"-Azerbaijan.html#EATERY_LIST_CONTENTS"
 
     def start_requests(self):
-        # self.driver = webdriver.Chrome(executable_path = chromeDriverPath)
         yield scrapy.Request(self.url, callback=self.parse)
 
-    #for every restaurant
     def parse(self, response):
 
         items = RestaurantItem()
