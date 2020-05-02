@@ -32,7 +32,11 @@ class TripadvisorSpider(scrapy.Spider):
                 items['name'] = link.split('-')[-2]
                 items['restaurant_type'] = div.css("div._2rmp5aUK div._3d9EnJpt span._1p0FLy4t::text").get()
                 try:
-                    items['restaurant_price'] = div.css("div._2rmp5aUK div._3d9EnJpt span._1p0FLy4t::text").getall()[1]
+                    if '$' in items['restaurant_type']:
+                        items['restaurant_price'] = items['restaurant_type']
+                        items['restaurant_type'] = ''
+                    else:
+                        items['restaurant_price'] = div.css("div._2rmp5aUK div._3d9EnJpt span._1p0FLy4t::text").getall()[1]
                 except:
                     items['restaurant_price'] = ''
                 items['restaurantid_fk'] = "https://www.tripadvisor.com/"+str(link)
