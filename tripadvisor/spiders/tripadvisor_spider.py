@@ -15,7 +15,7 @@ class TripadvisorSpider(scrapy.Spider):
 
     restaurant_id_list = []
     page_offset = 0
-    list_prev_len = 0
+    # list_prev_len = 0
     list_cur_len = 0
     count = 0
 
@@ -27,7 +27,7 @@ class TripadvisorSpider(scrapy.Spider):
 
     #for every restaurant
     def parse(self, response):
-        
+
         items = RestaurantItem()
         divs = response.css("div._1llCuDZj")
         print("Page Count ----- >>> ", self.count)
