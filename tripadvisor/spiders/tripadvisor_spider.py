@@ -94,7 +94,7 @@ class TripadvisorSpider(scrapy.Spider):
         items['price_range'] = ''
         items['cuisines'] = ''
         items['meals'] = ''
-        items['special_diets'] = ''
+        items['special_diets'] = 'something'
         try:
             details_title = response.css('div.restaurants-detail-overview-cards-DetailsSectionOverviewCard__categoryTitle--2RJP_::text').getall()
             details_text = response.css('div.restaurants-detail-overview-cards-DetailsSectionOverviewCard__tagText--1OH6h::text').getall()
