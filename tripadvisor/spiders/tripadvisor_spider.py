@@ -16,9 +16,7 @@ class TripadvisorSpider(scrapy.Spider):
     url = "https://www.tripadvisor.com/Restaurants-g293933-Azerbaijan.html"
 
     def start_requests(self):
-        # self.driver = webdriver.Chrome(executable_path = chromeDriverPath)
         yield scrapy.Request(self.url, callback=self.parse)
-
 
     def parse(self, response):
         """
@@ -76,22 +74,13 @@ class TripadvisorSpider(scrapy.Spider):
             items['image_url'] = response.css('div.prw_rup.prw_common_basic_image.photo_widget.large.landscape img').attrib['data-lazyurl']
         except:
             items['image_url'] = ''
-        try:
-            items['address'] = response.css('span.restaurants-detail-overview-cards-LocationOverviewCard__detailLinkText--co3ei::text').get()
-        except:
-            items['address'] = ''
+        items['address'] = response.css('span.restaurants-detail-overview-cards-LocationOverviewCard__detailLinkText--co3ei::text').get()
         try:
             items['phone_number'] =  response.css('a.restaurants-detail-top-info-TopInfo__infoCellLink--2ZRPG::text').getall()[-1]
         except:
             items['phone_number'] = ''
-        try:
-            items['review_count'] = response.css('a.restaurants-detail-overview-cards-RatingsOverviewCard__ratingCount--DFxkG::text').get()
-        except:
-            items['review_count'] = ''
-        try:
-            items['rate'] = response.css("span.restaurants-detail-overview-cards-RatingsOverviewCard__overallRating--nohTl::text").get()
-        except:
-            items['rate'] = ''
+        items['review_count'] = response.css('a.restaurants-detail-overview-cards-RatingsOverviewCard__ratingCount--DFxkG::text').get()
+        items['rate'] = response.css("span.restaurants-detail-overview-cards-RatingsOverviewCard__overallRating--nohTl::text").get()
         try:
             rates = response.css("span.restaurants-detail-overview-cards-RatingsOverviewCard__ratingBubbles--1kQYC")
         except:
