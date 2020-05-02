@@ -55,10 +55,8 @@ class TripadvisorSpider(scrapy.Spider):
         items['link'] = response.request.url
         items['coordinate'] = ''#response.css("#neighborhood img::attr(src)").get()
         items['image_url'] = response.css('div.prw_rup.prw_common_basic_image.photo_widget.large.landscape img').attrib['data-lazyurl']
-        try:
-            items['address'] = response.css('span.restaurants-detail-overview-cards-LocationOverviewCard__detailLinkText--co3ei::text').get()
-        except:
-            items['address'] = ''
+        items['address'] = response.css('span.restaurants-detail-overview-cards-LocationOverviewCard__detailLinkText--co3ei::text').get()
+        items['address'] = ''
         try:
             items['phone_number'] =  response.css('a.restaurants-detail-top-info-TopInfo__infoCellLink--2ZRPG::text').getall()[-1]
         except:
