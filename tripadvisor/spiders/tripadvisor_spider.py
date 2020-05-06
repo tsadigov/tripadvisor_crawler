@@ -49,7 +49,7 @@ class TripadvisorSpider(scrapy.Spider):
         self.page_offset+=30
         self.count += 1
 
-        if self.page_offset < 61:
+        if self.page_offset < 1021:
             next_page = "https://www.tripadvisor.com/Restaurants-g293933-oa"+str(self.page_offset)+"-Azerbaijan.html#EATERY_LIST_CONTENTS"
             yield scrapy.Request(next_page, self.parse)
 
@@ -57,22 +57,21 @@ class TripadvisorSpider(scrapy.Spider):
         items = RestaurantInfoItem()
         items['id'] = response.request.url.split('-')[-2]
         items['link'] = response.request.url
-        items['coordinate'] = ''#response.css("#neighborhood img::attr(src)").get()
-        items['image_url'] = response.css('div.prw_rup.prw_common_basic_image.photo_widget.large.landscape img').attrib['data-lazyurl']
-        items['address'] = response.css('span.restaurants-detail-overview-cards-LocationOverviewCard__detailLinkText--co3ei::text').get()
-        items['address'] = ''
+        items['coordinate'] = ''
         try:
-            items['phone_number'] =  response.css('a.restaurants-detail-top-info-TopInfo__infoCellLink--2ZRPG::text').getall()[-1]
+            items['image_url'] = response.css('div.prw_rup.prw_common_basic_image.photo_widget.large.landscape img').attrib['data-lazyurl']
+        except:
+            items['image_url'] = ''
+        items['address'] = response.css('span.restaurants-detail-overview-cards-LocationOverviewCard__detailLinkText--co3ei::text').get()
+        try:
+            cells = response.css('a.restaurants-detail-top-info-TopInfo__infoCellLink--2ZRPG::text').getall()
+            for cell in cells:
+                if '+'in cell:
+                    items['phone_number'] = cell
         except:
             items['phone_number'] = ''
-        try:
-            items['review_count'] = response.css('a.restaurants-detail-overview-cards-RatingsOverviewCard__ratingCount--DFxkG::text').get()
-        except:
-            items['review_count'] = ''
-        try:
-            items['rate'] = response.css("span.restaurants-detail-overview-cards-RatingsOverviewCard__overallRating--nohTl::text").get()
-        except:
-            items['rate'] = ''
+        items['review_count'] = response.css('a.restaurants-detail-overview-cards-RatingsOverviewCard__ratingCount--DFxkG::text').get()
+        items['rate'] = response.css("span.restaurants-detail-overview-cards-RatingsOverviewCard__overallRating--nohTl::text").get()
         try:
             rates = response.css("span.restaurants-detail-overview-cards-RatingsOverviewCard__ratingBubbles--1kQYC")
         except:
@@ -96,7 +95,7 @@ class TripadvisorSpider(scrapy.Spider):
         items['price_range'] = ''
         items['cuisines'] = ''
         items['meals'] = ''
-        items['special_diets'] = 'something'
+        items['special_diets'] = ''
         try:
             details_title = response.css('div.restaurants-detail-overview-cards-DetailsSectionOverviewCard__categoryTitle--2RJP_::text').getall()
             details_text = response.css('div.restaurants-detail-overview-cards-DetailsSectionOverviewCard__tagText--1OH6h::text').getall()
