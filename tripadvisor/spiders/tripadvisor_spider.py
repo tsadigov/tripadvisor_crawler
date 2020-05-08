@@ -3,6 +3,7 @@ import re, math
 from scrapy.loader import ItemLoader
 from tripadvisor.items import RestaurantItem, RestaurantInfoItem, RestaurantReviewItem
 import sys, os
+import time
 
 class TripadvisorSpider(scrapy.Spider):
     name = "tripadvisor"
@@ -14,7 +15,7 @@ class TripadvisorSpider(scrapy.Spider):
     #search page number
     count = 0
     #desired search page count to scrape
-    desired_count_to_scrape = 1021
+    desired_count_to_scrape = 36
 
     #Url to scrape
     url = "https://www.tripadvisor.com/Restaurants-g293933-oa"+str(page_offset)+"-Azerbaijan.html#EATERY_LIST_CONTENTS"
@@ -50,13 +51,14 @@ class TripadvisorSpider(scrapy.Spider):
                 self.restaurant_id_list.append(link)
 
                 yield items
+                # time.sleep(1)
                 #Request for each Restaurant
                 yield scrapy.Request("https://www.tripadvisor.com/"+str(link), self.parse_restaurants)
 
         self.page_offset+=30
         self.count += 1
         #Handle Pagination
-        if self.page_offset < self.desired_count_to_scrape:
+        if self.count < self.desired_count_to_scrape:
             next_page = "https://www.tripadvisor.com/Restaurants-g293933-oa"+str(self.page_offset)+"-Azerbaijan.html#EATERY_LIST_CONTENTS"
             yield scrapy.Request(next_page, self.parse)
 
@@ -75,13 +77,14 @@ class TripadvisorSpider(scrapy.Spider):
         except:
             items['image_url'] = ''
         #----
+        items['phone_number'] = ''
         try:
             cells = response.css('a.restaurants-detail-top-info-TopInfo__infoCellLink--2ZRPG::text').getall()
             for cell in cells:
                 if '+'in cell:
                     items['phone_number'] = cell
         except:
-            items['phone_number'] = ''
+            pass
         #----
         try:
             rates = response.css("span.restaurants-detail-overview-cards-RatingsOverviewCard__ratingBubbles--1kQYC")
