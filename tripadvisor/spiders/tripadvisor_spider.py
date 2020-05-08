@@ -7,22 +7,28 @@ import sys, os
 class TripadvisorSpider(scrapy.Spider):
     name = "tripadvisor"
 
+    #Using hotel ids to not scrape the same hotel page
     restaurant_id_list = []
+    #search page offset
     page_offset = 0
-    list_prev_len = 0
-    list_cur_len = 0
+    #search page number
     count = 0
+    #desired search page count to scrape
+    desired_count_to_scrape = 1021
 
+    #Url to scrape
     url = "https://www.tripadvisor.com/Restaurants-g293933-oa"+str(page_offset)+"-Azerbaijan.html#EATERY_LIST_CONTENTS"
 
     def start_requests(self):
         yield scrapy.Request(self.url, callback=self.parse)
 
+    '''Parse restaurants info and links from the search page'''
     def parse(self, response):
 
         items = RestaurantItem()
+        #Takes each restaurant block from search page
         divs = response.css("div._1llCuDZj")
-        print("Page Count ----- >>> ", self.count)
+        print(" -----------------------Page ",self.count," --------------------------------- ")
 
         for div in divs:
             link = div.css('a._15_ydu6b').attrib['href']
@@ -44,25 +50,31 @@ class TripadvisorSpider(scrapy.Spider):
                 self.restaurant_id_list.append(link)
 
                 yield items
+                #Request for each Restaurant
                 yield scrapy.Request("https://www.tripadvisor.com/"+str(link), self.parse_restaurants)
 
         self.page_offset+=30
         self.count += 1
-
-        if self.page_offset < 1021:
+        #Handle Pagination
+        if self.page_offset < self.desired_count_to_scrape:
             next_page = "https://www.tripadvisor.com/Restaurants-g293933-oa"+str(self.page_offset)+"-Azerbaijan.html#EATERY_LIST_CONTENTS"
             yield scrapy.Request(next_page, self.parse)
 
+    '''Parse each restaurant's detailed info from the given link'''
     def parse_restaurants(self, response):
         items = RestaurantInfoItem()
         items['id'] = response.request.url.split('-')[-2]
         items['link'] = response.request.url
         items['coordinate'] = ''
+        items['address'] = response.css('span.restaurants-detail-overview-cards-LocationOverviewCard__detailLinkText--co3ei::text').get()
+        items['review_count'] = response.css('a.restaurants-detail-overview-cards-RatingsOverviewCard__ratingCount--DFxkG::text').get()
+        items['rate'] = response.css("span.restaurants-detail-overview-cards-RatingsOverviewCard__overallRating--nohTl::text").get()
+
         try:
             items['image_url'] = response.css('div.prw_rup.prw_common_basic_image.photo_widget.large.landscape img').attrib['data-lazyurl']
         except:
             items['image_url'] = ''
-        items['address'] = response.css('span.restaurants-detail-overview-cards-LocationOverviewCard__detailLinkText--co3ei::text').get()
+        #----
         try:
             cells = response.css('a.restaurants-detail-top-info-TopInfo__infoCellLink--2ZRPG::text').getall()
             for cell in cells:
@@ -70,32 +82,37 @@ class TripadvisorSpider(scrapy.Spider):
                     items['phone_number'] = cell
         except:
             items['phone_number'] = ''
-        items['review_count'] = response.css('a.restaurants-detail-overview-cards-RatingsOverviewCard__ratingCount--DFxkG::text').get()
-        items['rate'] = response.css("span.restaurants-detail-overview-cards-RatingsOverviewCard__overallRating--nohTl::text").get()
+        #----
         try:
             rates = response.css("span.restaurants-detail-overview-cards-RatingsOverviewCard__ratingBubbles--1kQYC")
         except:
             rates = ''
+        #----
         try:
             items['rate_food'] = self.get_rate(rates[0].css('span span').attrib['class'])
         except:
             items['rate_food'] = ''
+        #----
         try:
             items['rate_service'] = self.get_rate(rates[1].css('span span').attrib['class'])
         except:
             items['rate_service'] = ''
+        #----
         try:
             items['rate_atmosphere'] = self.get_rate(rates[3].css('span span').attrib['class'])
         except:
             items['rate_atmosphere'] = ''
+        #----
         try:
             items['rate_value'] = self.get_rate(rates[2].css('span span').attrib['class'])
         except:
             items['rate_value'] = ''
+        #----
         items['price_range'] = ''
         items['cuisines'] = ''
         items['meals'] = ''
         items['special_diets'] = ''
+        #----
         try:
             details_title = response.css('div.restaurants-detail-overview-cards-DetailsSectionOverviewCard__categoryTitle--2RJP_::text').getall()
             details_text = response.css('div.restaurants-detail-overview-cards-DetailsSectionOverviewCard__tagText--1OH6h::text').getall()
@@ -103,6 +120,7 @@ class TripadvisorSpider(scrapy.Spider):
                 items[title.replace(' ','_').lower()] = text
         except:
             pass
+        #----
         yield items
 
     def str_to_int(self, number):
@@ -112,6 +130,7 @@ class TripadvisorSpider(scrapy.Spider):
             num += n
         return int(num)
 
+    '''Checking if selector returns value or not'''
     def check_empty(self, value):
         try:
             if value:
@@ -121,5 +140,6 @@ class TripadvisorSpider(scrapy.Spider):
         except:
             return ''
 
+    '''Get hotel rate from the link'''
     def get_rate(self, rate):
         return float(rate.split('_')[-1])/10
