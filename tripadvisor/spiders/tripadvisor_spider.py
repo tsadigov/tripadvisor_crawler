@@ -51,7 +51,6 @@ class TripadvisorSpider(scrapy.Spider):
                 self.restaurant_id_list.append(link)
 
                 yield items
-                # time.sleep(1)
                 #Request for each Restaurant
                 yield scrapy.Request("https://www.tripadvisor.com/"+str(link), self.parse_restaurants)
 
