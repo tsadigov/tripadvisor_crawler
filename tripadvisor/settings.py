@@ -56,6 +56,10 @@ ROBOTSTXT_OBEY = True
 #DOWNLOADER_MIDDLEWARES = {
 #    'tripadvisor.middlewares.TripadvisorDownloaderMiddleware': 543,
 #}
+DOWNLOADER_MIDDLEWARES = {
+    'tripadvisor.middlewares.TripadvisorDownloaderMiddleware': 543,
+    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
+}
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
@@ -65,9 +69,9 @@ ROBOTSTXT_OBEY = True
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'tripadvisor.pipelines.TripadvisorPipeline': 300,
-#}
+ITEM_PIPELINES = {
+   'tripadvisor.pipelines.TripadvisorPipeline': 300,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
