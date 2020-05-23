@@ -20,7 +20,7 @@ NEWSPIDER_MODULE = 'tripadvisor.spiders'
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36'
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
@@ -56,10 +56,10 @@ ROBOTSTXT_OBEY = True
 #DOWNLOADER_MIDDLEWARES = {
 #    'tripadvisor.middlewares.TripadvisorDownloaderMiddleware': 543,
 #}
-DOWNLOADER_MIDDLEWARES = {
-    'tripadvisor.middlewares.TripadvisorDownloaderMiddleware': 543,
-    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-}
+# DOWNLOADER_MIDDLEWARES = {
+#     'tripadvisor.middlewares.TripadvisorDownloaderMiddleware': 543,
+#     'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
+# }
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html

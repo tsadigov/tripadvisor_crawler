@@ -47,8 +47,7 @@ class TripadvisorPipeline(object):
                     rate text,
                     date text,
                     title text,
-                    positive_content text,
-                    negative_content text,
+                    content text,
                     restaurantreview_fk text
                     )""")
 
@@ -94,15 +93,14 @@ class TripadvisorPipeline(object):
         self.conn.commit()
 
     def store_restaurant_review(self, item):
-        self.curr.execute("""insert into restaurant_review_table values (?,?,?,?,?,?,?,?,?)""",(
+        self.curr.execute("""insert into restaurant_review_table values (?,?,?,?,?,?,?,?)""",(
             None,
             item['name'],
             item['country'],
             item['rate'],
             item['date'],
             item['title'],
-            item['positive_content'],
-            item['negative_content'],
+            item['content'],
             item['restaurantreview_fk'],
         ))
         self.conn.commit()

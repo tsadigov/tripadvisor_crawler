@@ -33,6 +33,5 @@ class RestaurantReviewItem(scrapy.Item):
     rate = scrapy.Field()
     date = scrapy.Field()
     title = scrapy.Field()
-    positive_content = scrapy.Field()
-    negative_content = scrapy.Field()
+    content = scrapy.Field()
     restaurantreview_fk = scrapy.Field()
